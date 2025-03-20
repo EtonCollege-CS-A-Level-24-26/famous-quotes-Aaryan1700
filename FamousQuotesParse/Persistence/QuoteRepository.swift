@@ -35,7 +35,7 @@ class QuoteRepository {
         }
     }
     
-    func deleteQuote(quote: Quote, completion: @escaping (Quote) -> Void) {
+    func deleteQuote(quote: Quote) {
         let query = QuoteDao.query("author" == quote.author, "content" == quote.content)
         
         query.find { response in

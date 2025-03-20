@@ -14,18 +14,15 @@ struct ContentView: View {
         NavigationStack {
             List {
                 ForEach(vm.quotes) { quote in
-                    HStack {
-                        Text(quote.content)
-                        
-                        Spacer()
-                        
-                        Button("Edit") {
-                            vm.editQuote()
+                    Text(quote.content)
+                        .onTapGesture {
+                            vm.isShowingEditQuote = true
+                            vm.quoteToEdit = quote
+                            vm.newQuoteAuthor = quote.author
+                            vm.newQuoteContent = quote.content
                         }
-                    }
                 }
                 .onDelete(perform: vm.deleteQuote)
-                .onTapGesture(perform: vm.editQuote)
             }
             .onAppear {
                 vm.restoreQuotes()
@@ -39,9 +36,24 @@ struct ContentView: View {
                     }
                 }
             }
+            .sheet(isPresented: $vm.isShowingEditQuote) {
+                Form {
+                    TextField("Author", text: $vm.newQuoteAuthor)
+                    TextField("Quote", text: $vm.newQuoteContent)
+                    Button("Edit") {
+                        vm.editQuote(quote: vm.quoteToEdit, newAuthor: vm.newQuoteAuthor, newContent: vm.newQuoteContent)
+                        vm.newQuoteAuthor = ""
+                        vm.newQuoteContent = ""
+                        vm.isShowingEditQuote = false
+                    }
+                }
+            }
             .toolbar {
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add", systemImage: "plus") {
+                        vm.newQuoteAuthor = ""
+                        vm.newQuoteContent = ""
                         vm.isShowingAddQuote = true
                     }
                 }

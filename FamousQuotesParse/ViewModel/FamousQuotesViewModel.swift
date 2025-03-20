@@ -14,12 +14,16 @@ class FamousQuotesViewModel {
     var isShowingAddQuote: Bool
     var newQuoteAuthor: String
     var newQuoteContent: String
+    var isShowingEditQuote: Bool
+    var quoteToEdit: Quote
     
     init() {
         self.quotes = []
         self.isShowingAddQuote = false
         self.newQuoteAuthor = ""
         self.newQuoteContent = ""
+        self.isShowingEditQuote = false
+        self.quoteToEdit = Quote(author: "Temp", content: "Temp")
     }
     
     func restoreQuotes() {
@@ -41,9 +45,8 @@ class FamousQuotesViewModel {
         let index = offsets.first!
         let quote = self.quotes[index]
 
-        QuoteRepository.shared.deleteQuote(quote: quote) { deletedQuote in
-            self.quotes.remove(at: index)
-        }
+        QuoteRepository.shared.deleteQuote(quote: quote)
+        self.quotes.remove(at: index)
     }
     
     func sortQuotes() {
@@ -52,10 +55,8 @@ class FamousQuotesViewModel {
         }
     }
     
-    func editQuote(at offsets: IndexSet) {
-        let index = offsets.first!
-        let quote = self.quotes[index]
-        
-        
+    func editQuote(quote: Quote, newAuthor: String, newContent: String) {
+        QuoteRepository.shared.deleteQuote(quote: quote)
+        QuoteRepository.shared.saveQuote(quote: Quote(author: newAuthor, content: newContent))
     }
 }
