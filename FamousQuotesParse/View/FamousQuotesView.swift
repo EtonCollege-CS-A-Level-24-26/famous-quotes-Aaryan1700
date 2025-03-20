@@ -14,8 +14,18 @@ struct ContentView: View {
         NavigationStack {
             List {
                 ForEach(vm.quotes) { quote in
-                    Text(quote.content)
+                    HStack {
+                        Text(quote.content)
+                        
+                        Spacer()
+                        
+                        Button("Edit") {
+                            vm.editQuote()
+                        }
+                    }
                 }
+                .onDelete(perform: vm.deleteQuote)
+                .onTapGesture(perform: vm.editQuote)
             }
             .onAppear {
                 vm.restoreQuotes()
@@ -33,6 +43,12 @@ struct ContentView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add", systemImage: "plus") {
                         vm.isShowingAddQuote = true
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Sort") {
+                        vm.sortQuotes()
                     }
                 }
             }

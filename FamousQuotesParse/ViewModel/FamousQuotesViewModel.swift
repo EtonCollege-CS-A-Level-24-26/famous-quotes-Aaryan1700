@@ -36,4 +36,26 @@ class FamousQuotesViewModel {
         newQuoteContent = ""
         isShowingAddQuote = false
     }
+    
+    func deleteQuote(at offsets: IndexSet) {
+        let index = offsets.first!
+        let quote = self.quotes[index]
+
+        QuoteRepository.shared.deleteQuote(quote: quote) { deletedQuote in
+            self.quotes.remove(at: index)
+        }
+    }
+    
+    func sortQuotes() {
+        QuoteRepository.shared.getSortedQuotes { quotes in
+            self.quotes = quotes
+        }
+    }
+    
+    func editQuote(at offsets: IndexSet) {
+        let index = offsets.first!
+        let quote = self.quotes[index]
+        
+        
+    }
 }

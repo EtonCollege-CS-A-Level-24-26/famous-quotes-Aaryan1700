@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ParseSwift
 
 class QuoteRepository {
     static let shared = QuoteRepository()
@@ -23,6 +24,40 @@ class QuoteRepository {
     
     func getAllQuotes(completion: @escaping ([Quote]) -> Void) {
         let query = QuoteDao.query()
+        query.find() { response in
+            let quotes: [Quote] = (try? response.get())?.compactMap({
+                guard let author = $0.author, let content = $0.content else { return nil }
+                return Quote(author: author, content: content)
+            }) ?? []
+            
+            completion(quotes)
+            
+        }
+    }
+    
+    func deleteQuote(quote: Quote, completion: @escaping (Quote) -> Void) {
+        let query = QuoteDao.query("author" == quote.author, "content" == quote.content)
+        
+        query.find { response in
+            switch response {
+            case .success(let quoteToDelete):
+                quoteToDelete[0].delete { deleteResult in
+                    switch deleteResult {
+                    case .success:
+                        print("Object deleted successfully!")
+                    case .failure(let error):
+                        print("Error deleting object: \(error.localizedDescription)")
+                    }
+                }
+            case .failure(let error):
+                print("Error retrieving object: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func getSortedQuotes(completion: @escaping ([Quote]) -> Void) {
+        let query = QuoteDao.query().order([.descending("createdAt")])
+        
         query.find() { response in
             let quotes: [Quote] = (try? response.get())?.compactMap({
                 guard let author = $0.author, let content = $0.content else { return nil }
