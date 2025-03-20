@@ -58,5 +58,6 @@ class FamousQuotesViewModel {
     func editQuote(quote: Quote, newAuthor: String, newContent: String) {
         QuoteRepository.shared.deleteQuote(quote: quote)
         QuoteRepository.shared.saveQuote(quote: Quote(author: newAuthor, content: newContent))
+        self.quotes[self.quotes.firstIndex(where: { $0.id == quote.id })!] = Quote(author: newAuthor, content: newContent)
     }
 }
