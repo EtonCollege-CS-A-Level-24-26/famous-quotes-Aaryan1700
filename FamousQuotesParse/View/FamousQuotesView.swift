@@ -15,7 +15,14 @@ struct ContentView: View {
             List {
                 ForEach(vm.quotes) { quote in
                     Text(quote.content)
+                        .onTapGesture {
+                            vm.isShowingEditQuote = true
+                            vm.quoteToEdit = quote
+                            vm.newQuoteAuthor = quote.author
+                            vm.newQuoteContent = quote.content
+                        }
                 }
+                .onDelete(perform: vm.deleteQuote)
             }
             .onAppear {
                 vm.restoreQuotes()
@@ -29,10 +36,31 @@ struct ContentView: View {
                     }
                 }
             }
+            .sheet(isPresented: $vm.isShowingEditQuote) {
+                Form {
+                    TextField("Author", text: $vm.newQuoteAuthor)
+                    TextField("Quote", text: $vm.newQuoteContent)
+                    Button("Edit") {
+                        vm.editQuote(quote: vm.quoteToEdit, newAuthor: vm.newQuoteAuthor, newContent: vm.newQuoteContent)
+                        vm.newQuoteAuthor = ""
+                        vm.newQuoteContent = ""
+                        vm.isShowingEditQuote = false
+                    }
+                }
+            }
             .toolbar {
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add", systemImage: "plus") {
+                        vm.newQuoteAuthor = ""
+                        vm.newQuoteContent = ""
                         vm.isShowingAddQuote = true
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Sort") {
+                        vm.sortQuotes()
                     }
                 }
             }
